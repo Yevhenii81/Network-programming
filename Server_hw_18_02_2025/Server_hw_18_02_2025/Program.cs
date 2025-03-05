@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -35,10 +35,14 @@ class CurrencyExchangeServer
             if (currentConnections >= maxConnections)
             {
                 Console.WriteLine("Server is at full capacity. Rejecting new connections.");
-
-                Thread.Sleep(5000);
+                TcpClient tempClient = listener.AcceptTcpClient();
+                using NetworkStream tempStream = tempClient.GetStream();
+                byte[] message = Encoding.UTF8.GetBytes("Server is at full capacity. Try again later.");
+                tempStream.Write(message, 0, message.Length);
+                tempClient.Close();
                 continue;
             }
+
 
 
             TcpClient client = listener.AcceptTcpClient();
